@@ -14,7 +14,10 @@ module Amorail
       @api_endpoint = api_endpoint
       @api_key = api_key
       @usermail = usermail
-      @connect = Faraday.new(url: api_endpoint) do |faraday|
+      @connect = Faraday.new(
+        url: api_endpoint,
+        headers: default_headers
+      ) do |faraday|
         faraday.adapter Faraday.default_adapter
         faraday.response :json, content_type: /\bjson$/
         faraday.use :instrumentation
@@ -94,6 +97,10 @@ module Amorail
       else
         fail ::Amorail::AmoUnknownError(response.body)
       end
+    end
+
+    def default_headers
+      { 'Host' => URI(@api_endpoint).host }
     end
   end
 end
